@@ -1,6 +1,7 @@
 # Toword
 
-<h4>today + (the english) word</h4>
+<h3>today + (foreign) word</h3>
+매일매일 외국어 단어를 외울 수 있게 도와드립니다!
 
 <h3>Design</h3>
 reference - https://color.hailpixel.com/<br>
