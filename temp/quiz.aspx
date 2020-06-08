@@ -6,13 +6,121 @@
 
 <script runat="server">
 
+    static class typeOfquiz
+    {
+        public const int numOfToeic = 1495;
+        public const int numOfEngBasic = 3000;
+        public const int numOfGerBasic = 3134;
+
+        public const string Toeic = "toeic.xls";
+        public const string EngBasic = "english_basic.xls";
+        public const string GerBasic = "german_basic.xls";
+    }
+    //class quiz
+    //{
+    //    public string word { get; set; }
+    //    public string meaning { get; set; }
+
+    //}
+
+    struct quiz
+    {
+        public string word { get; set; }
+        public string meaning { get; set; }
+
+    }
+
     //엑셀파일 뭐불러 올건지
     string fileName;
+    List<quiz> quizzes;
+
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        fileName ="C:\\works/" +"toeic.xls";
-        LoadExcel(fileName);
+        DataTable dataTable = new DataTable();
+
+        if(!Page.IsPostBack)
+        {
+            //post로 받은 데이터쓰는 방법
+            //fileName = Request.Form["data"].ToString();
+
+            //파일 설정
+            fileName = "C:\\works/" + typeOfquiz.Toeic;
+
+            //오늘 외울 단어의 인덱스
+            int[] arrCorrect =MakeRandomNum(typeOfquiz.numOfToeic,10);
+            //퀴즈에 사용될 오답의 인덱스
+            int[] arrWrong = MakeRandomNum(typeOfquiz.numOfToeic,40);
+
+
+            Label[] labels = new Label[] { Label1, Label2, Label3, Label4, Label5, Label6, Label7, Label8, Label9, Label10 };
+            RadioButtonList[] radioList = new RadioButtonList[] { RadioButtonList1, RadioButtonList2, RadioButtonList3, RadioButtonList4, RadioButtonList5, RadioButtonList6, RadioButtonList7, RadioButtonList8, RadioButtonList9, RadioButtonList10 };
+
+
+
+
+            //가져온 파일을 담은 데이터테이블
+            dataTable = LoadExcel(fileName);
+
+
+            //구조체 타입의 단어와 그 뜻을 담은 객체 리스트
+            quizzes = new List<quiz>();
+
+            //오답이 담길 문자열 배열
+            string[] incorrect = new string[arrWrong.Length];
+
+            //단어 리스트에 정답인덱스에 해당하는 단어를 엑셀파일에서 가져옴
+            for (int i = 0; i < arrCorrect.Length; i++)
+            {
+                quizzes.Add(new quiz() { word = dataTable.Rows[arrCorrect[i]][1].ToString(), meaning = dataTable.Rows[arrCorrect[i]][2].ToString() });
+
+            }
+
+            //오답40개를 오답 배열에 담음
+            for(int i = 0; i < arrWrong.Length; i++)
+            {
+                incorrect[i] = dataTable.Rows[arrWrong[i]][2].ToString();
+            }
+
+
+
+            //퀴즈를 라벨과 라디오버튼에 배치하는 작업
+            for (int i = 0; i < 10; i++)
+            {
+                labels[i].Text = quizzes[i].word.ToString();
+                radioList[i].Items.Add(quizzes[i].meaning.ToString());
+                for(int j = 0; j < 4; j++)
+                {
+                    if (i == 0 && j == 0)
+                        radioList[i].Items.Add(incorrect[new Random().Next(0, 39)]);
+                    else
+                        radioList[i].Items.Add(incorrect[i*4+j]);
+                }
+
+                //리스트아이템의 순서를 바꾸는 작업
+                //임시리스트를 생성후 기존리스트 값을 옮김
+                List<ListItem> list = new List<ListItem>();
+                foreach (ListItem listItem in radioList[i].Items)
+                    list.Add(listItem);
+
+                //오름차순으로 정렬할 리스트를 만들어서 임시리스트의 값을 복사 후 원래 리스트값을 클리어
+                List<ListItem> sortedList = list.OrderBy(b => b.Text).ToList();
+                radioList[i].Items.Clear();
+
+                //정렬된 리스트를 복사
+                foreach (ListItem sortedListItem in sortedList)
+                    radioList[i].Items.Add(sortedListItem);
+
+            }
+
+
+
+
+
+
+
+        }
+
 
     }
 
@@ -34,6 +142,7 @@
         OleDbConnection oleCon = new OleDbConnection(con);
         //첫번째 시트에서 가져오게
         OleDbCommand cmd = new OleDbCommand("Select * FROM [Sheet1$]", oleCon);
+
         oleCon.Open();
 
         //adapter사용
@@ -50,9 +159,28 @@
         dataTable.Load(cmd.ExecuteReader());
         //str = dataTable.Rows[0][0].ToString();
 
+        oleCon.Close();
+
         //엑셀 데이터가 로드된 데이터 테이블 반환
         return dataTable;
     }
+
+    public int[] MakeRandomNum(int numOfNeeds, int scaleOfArr)
+    {
+        int[] arr = new int[scaleOfArr];
+
+        Random random = new Random();
+
+        for(int i=0; i < scaleOfArr; i++)
+        {
+            arr[i]=random.Next(1, numOfNeeds);
+        }
+        return arr;
+    }
+
+
+
+
 
 </script>
 
@@ -64,51 +192,73 @@
 <body>
     <form id="form1" runat="server">
         <div>
-           
+            
+            
 
-            <asp:Wizard ID="Wizard1" runat="server">
+            <asp:Wizard ID="Wizard1" runat="server" >
                 <WizardSteps>
-                    <asp:WizardStep ID="WizardStep1" runat="server" Title="Step 1" StepType="Start">
+                    <asp:WizardStep ID="WizardStep1" runat="server" Title="Step 1" StepType="Start" >
 
+                        <asp:Label ID="Label1" runat="server" Text="Label"></asp:Label>
                         <asp:RadioButtonList ID="RadioButtonList1" runat="server" >
-
-
-                            <asp:ListItem>temp</asp:ListItem>
-                            <asp:ListItem>temp2</asp:ListItem>
-                            <asp:ListItem>temp3</asp:ListItem>
-                            <asp:ListItem>temp4</asp:ListItem>
-                            
-
                         </asp:RadioButtonList>
 
                     </asp:WizardStep>
+
                     <asp:WizardStep ID="WizardStep2" runat="server" Title="Step 2">
-
+                        <asp:Label ID="Label2" runat="server" Text="Label"></asp:Label>
+                        <asp:RadioButtonList ID="RadioButtonList2" runat="server" >
+                        </asp:RadioButtonList>
                     </asp:WizardStep>
+
                     <asp:WizardStep ID="WizardStep3"  runat="server" Title="Step 3">
-
+                        <asp:Label ID="Label3" runat="server" Text="Label"></asp:Label>
+                        <asp:RadioButtonList ID="RadioButtonList3" runat="server" >
+                        </asp:RadioButtonList>
                     </asp:WizardStep>
+
                     <asp:WizardStep ID="WizardStep4"  runat="server" Title="Step 4">
-
+                        <asp:Label ID="Label4" runat="server" Text="Label"></asp:Label>
+                        <asp:RadioButtonList ID="RadioButtonList4" runat="server" >
+                        </asp:RadioButtonList>
                     </asp:WizardStep>
+
                     <asp:WizardStep ID="WizardStep5"  runat="server" Title="Step 5">
-
+                        <asp:Label ID="Label5" runat="server" Text="Label"></asp:Label>
+                        <asp:RadioButtonList ID="RadioButtonList5" runat="server" >
+                        </asp:RadioButtonList>
                     </asp:WizardStep>
+
                     <asp:WizardStep ID="WizardStep6"  runat="server" Title="Step 6">
-
+                        <asp:Label ID="Label6" runat="server" Text="Label"></asp:Label>
+                        <asp:RadioButtonList ID="RadioButtonList6" runat="server" >
+                        </asp:RadioButtonList>
                     </asp:WizardStep>
+
                     <asp:WizardStep ID="WizardStep7"  runat="server" Title="Step 7">
-
+                        <asp:Label ID="Label7" runat="server" Text="Label"></asp:Label>
+                        <asp:RadioButtonList ID="RadioButtonList7" runat="server" >
+                        </asp:RadioButtonList>
                     </asp:WizardStep>
+
                     <asp:WizardStep ID="WizardStep8"  runat="server" Title="Step 8">
-
+                        <asp:Label ID="Label8" runat="server" Text="Label"></asp:Label>
+                        <asp:RadioButtonList ID="RadioButtonList8" runat="server" >
+                        </asp:RadioButtonList>
                     </asp:WizardStep>
+
                     <asp:WizardStep ID="WizardStep9"  runat="server" Title="Step 9">
-
+                        <asp:Label ID="Label9" runat="server" Text="Label"></asp:Label>
+                        <asp:RadioButtonList ID="RadioButtonList9" runat="server" >
+                        </asp:RadioButtonList>
                     </asp:WizardStep>
+
                     <asp:WizardStep ID="WizardStep10"  runat="server" StepType="Finish" Title="Step 10">
-
+                        <asp:Label ID="Label10" runat="server" Text="Label"></asp:Label>
+                        <asp:RadioButtonList ID="RadioButtonList10" runat="server" >
+                        </asp:RadioButtonList>
                     </asp:WizardStep>
+
                 </WizardSteps>
             </asp:Wizard>
 
