@@ -8,7 +8,7 @@
 
     static class typeOfquiz
     {
-        public const int numOfToeic = 1495;
+        public const int numOfToeic = 1480;
         public const int numOfEngBasic = 3000;
         public const int numOfGerBasic = 3134;
 
@@ -47,23 +47,33 @@
     protected void Page_Load(object sender, EventArgs e)
     {
 
-
-
         if (!Page.IsPostBack)
         {
+            //각종 컨트롤 및 변수 초기화
             Init();
 
             //퀴즈를 라벨과 라디오버튼에 배치하는 작업
             for (int i = 0; i < 10; i++)
             {
                 labels[i].Text = quizzes[i].word.ToString();
+
                 radioList[i].Items.Add(quizzes[i].meaning.ToString());
                 for(int j = 0; j < 4; j++)
                 {
-                    if (i == 0 && j == 0)
-                        radioList[i].Items.Add(incorrect[new Random().Next(0, 39)]);
-                    else
-                        radioList[i].Items.Add(incorrect[i*4+j]);
+
+                    if (j == 0)
+                    {
+                        radioList[i].Items[0].Value = "o";
+                        radioList[i].Items[0].Text = quizzes[i].meaning.ToString();
+                    }
+                    else //j=1,2,3
+                    {
+                        radioList[i].Items.Add(incorrect[i * 4 + j]);
+
+                        radioList[i].Items[j].Value = "x";
+                        radioList[i].Items[j].Text = incorrect[i * 4 + j];
+                    }
+                    //TextBox1.Text +=radioList[i].Items[j].Value + ":" +radioList[i].Items[j].Text +"\n";
                 }
 
                 //리스트아이템의 순서를 바꾸는 작업
@@ -79,18 +89,27 @@
                 //정렬된 리스트를 복사
                 foreach (ListItem sortedListItem in sortedList)
                     radioList[i].Items.Add(sortedListItem);
-
-                Response.Write(quizzes[i].word+"\t" + quizzes[i]+"\n");
             }
+
         }
+    }
+
+    protected void Button1_Click(object sender, EventArgs e)
+    {
+
+        labels = new Label[] { Label1, Label2, Label3, Label4, Label5, Label6, Label7, Label8, Label9, Label10 };
+        radioList = new RadioButtonList[] { RadioButtonList1, RadioButtonList2, RadioButtonList3, RadioButtonList4, RadioButtonList5, RadioButtonList6, RadioButtonList7, RadioButtonList8, RadioButtonList9, RadioButtonList10 };
 
 
 
+        for(int i = 0; i < 4; i++)
+        {
+            Label13.Text += radioList[0].Items[i].Value + ":" +radioList[0].Items[0].Text +",|||||||||||";
+        }
 
     }
 
-
-
+    //컨트롤 및 변수 초기화
     public void Init()
     {
         labels = new Label[] { Label1, Label2, Label3, Label4, Label5, Label6, Label7, Label8, Label9, Label10 };
@@ -134,50 +153,47 @@
 
         List<quiz> wrong = new List<quiz>();
 
+        //endStep이면 점수보여주고 틀린 문제 저장
         if (Wizard1.ActiveStep == endStep)
         {
+            labels = new Label[] { Label1, Label2, Label3, Label4, Label5, Label6, Label7, Label8, Label9, Label10 };
+            radioList = new RadioButtonList[] { RadioButtonList1, RadioButtonList2, RadioButtonList3, RadioButtonList4, RadioButtonList5, RadioButtonList6, RadioButtonList7, RadioButtonList8, RadioButtonList9, RadioButtonList10 };
 
+            int Crt=0;    //정답 카운트
+            int inCrt=0;  //오답 카운트
+
+            List<quiz> goToDB = new List<quiz>();
+
+            //답을 검사
             for (int i = 0; i < 10; i++)
             {
-                //if (!quizzes[i].meaning.ToString().Contains(radioList[i].SelectedValue.ToString()))
-                //{
-                //    wrong.Add(quizzes[i]);
+                for (int j = 0; j < 4; j++)
+                {
 
-                //}
-                TextBox1.Text += labels[i].Text + "\n";
-                
+                    if (radioList[i].SelectedValue == "x" && radioList[i].Items[j].Value == "o")
+                    {
+                        goToDB.Add(new quiz() { word = labels[i].Text, meaning = radioList[i].Items[j].Text });
+                        inCrt++;
+
+                    }
+                }
             }
 
+            Crt = 10 - inCrt;
+
+            Response.Write("crt : " + Crt + ". inCrt : " + inCrt);
+
+
+
+
+
         }
-
     }
 
 
-    protected void Wizard1_FinishButtonClick(object sender, WizardNavigationEventArgs e)
-    {
 
 
-
-        //for (int i = 0; i < 10; i++)
-        //{
-        //    //if (!quizzes[i].word.ToString().Equals(radioList[i].SelectedValue.ToString()))
-        //    //{
-        //    //    //wrong.Add(quizzes[i]);
-
-        //    //}
-        //    Label12.Text += quizzes[i].word.ToString() + "\t ,\t " + quizzes[i].meaning.ToString() + "\t ,\t " + radioList[i].SelectedValue + "\n";
-        //}
-
-        Response.Write(quizzes[0].word);
-
-    }
-
-    public void abc()
-    {
-
-        //Label12.Text = quizzes.Count.ToString();
-    }
-
+    //엑셀 가져오는 메소드
     public DataTable LoadExcel(string fileName)
     {
 
@@ -207,6 +223,7 @@
         adapter.Fill(dsData);
 
         DataTable dataTable = new DataTable();
+
         //테이블에 커맨드 실행한걸 로드함
         dataTable.Load(cmd.ExecuteReader());
         //str = dataTable.Rows[0][0].ToString();
@@ -216,7 +233,7 @@
         //엑셀 데이터가 로드된 데이터 테이블 반환
         return dataTable;
     }
-
+    //엑셀 파일에서 임의의 인덱스값을 가져오기위해 
     public int[] MakeRandomNum(int numOfNeeds, int scaleOfArr)
     {
         int[] arr = new int[scaleOfArr];
@@ -231,12 +248,10 @@
     }
 
 
+    protected void Wizard1_FinishButtonClick(object sender, WizardNavigationEventArgs e)
+    {
 
-
-
-
-
-
+    }
 </script>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -248,9 +263,9 @@
     <form id="form1" runat="server">
         <div >
             
-            <asp:Button ID="Button1" runat="server" Text="Button"/>
+            <asp:Button ID="Button1" runat="server" Text="Button" OnClick="Button1_Click"/>
 
-            <asp:Wizard ID="Wizard1" runat="server" OnFinishButtonClick="Wizard1_FinishButtonClick" OnActiveStepChanged="Wizard1_ActiveStepChanged" C ActiveStepIndex="8">
+            <asp:Wizard ID="Wizard1" runat="server" OnActiveStepChanged="Wizard1_ActiveStepChanged"  ActiveStepIndex="0" OnFinishButtonClick="Wizard1_FinishButtonClick">
                 <WizardSteps>
 
                     <asp:WizardStep ID="startStep" runat="server" StepType="Start" Title="시작하기">
@@ -262,7 +277,7 @@
                         <asp:Label ID="Label1" runat="server" Text="Label"></asp:Label>
                         <asp:RadioButtonList ID="RadioButtonList1" runat="server" >
                         </asp:RadioButtonList>
-
+                        <asp:Label ID="Label13" runat="server" Text="Label"></asp:Label>
                     </asp:WizardStep>
 
                     <asp:WizardStep ID="question2" runat="server" Title="Step 2">
@@ -322,7 +337,7 @@
 
 
 
-                    <asp:WizardStep ID="endStep"  runat="server" StepType="Step" Title="finis">
+                    <asp:WizardStep ID="endStep"  runat="server" StepType="Finish" Title="finis">
                         <asp:Label ID="Label11" runat="server" Text="Label"></asp:Label>
                         <asp:TextBox ID="TextBox1" runat="server" TextMode="MultiLine"></asp:TextBox>
 
@@ -330,7 +345,7 @@
 
                     <asp:WizardStep ID="WizardStep1"  runat="server" StepType="Complete" Title="complete">
                         <asp:Label ID="Label12" runat="server" Text=""></asp:Label>
-
+                        
                     </asp:WizardStep>
                 </WizardSteps>
             </asp:Wizard>
