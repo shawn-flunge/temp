@@ -1,0 +1,25 @@
+
+create table MyDB.dbo.userInfo(
+	id varchar(20),
+	pwd varchar(20) NOT NULL,
+	email varchar(50) NOT NULL,
+	constraint UserInfo_id_pk primary key(id)
+);
+
+
+create table reminder(
+word varchar(40),
+meaning varchar(40) not null,
+id varchar(20),
+importance int,
+constraint reminder_word_pk primary key(word),
+constraint reminder_id_fk foreign key(id) references MyDB.dbo.UserInfo(id)
+on delete cascade
+on update cascade);
+
+create table oneLineBoard(
+no int primary key clustered identity(1,1) not null,
+id varchar(20) constraint OLB_id_fk references MyDB.dbo.UserInfo(id) on delete cascade on update cascade,
+content text not null,
+writedate Date,
+);
