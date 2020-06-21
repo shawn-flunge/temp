@@ -1,5 +1,6 @@
 ﻿<%@ Page Language="C#" %>
 <%@ Import Namespace="System.Net.Mail" %>
+<%@ Import Namespace="System.Data.SqlClient" %>
 
 <!DOCTYPE html>
 
@@ -45,18 +46,47 @@
         client.UseDefaultCredentials = false;
         client.Credentials = new System.Net.NetworkCredential("echun1234@gmail.com", "비밀번호");
         client.Send(message);
-       
+
+
+        confirmMail.Visible = true;
     }
 
+    public void CheckForSubmit()
+    {
 
+        if(pwd==pwdck && confirmMail.Text == verificationCode)
+        {
+            SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog=MyDB; Integrated Security=False; uid=flunge; pwd=dksk1399");
+
+            string sql = "insert into user values(@userid, @password, @email)";
+            SqlCommand cmd = new SqlCommand(sql, con);
+
+            cmd.Parameters.AddWithValue("@userid", userID.Text);
+            cmd.Parameters.AddWithValue("@password", pwd.Text);
+            cmd.Parameters.AddWithValue("@name", email.Text);
+
+            con.Open();
+            cmd.ExecuteNonQuery();
+
+            con.Close();
+        }
+
+
+    }
+
+    protected void Button2_Click(object sender, EventArgs e)
+    {
+        CheckForSubmit();
+    }
 </script>
 <script lang="javascript" type="text/javascript">
 
-    function openCk() {
+    function ConfirmID() {
         window.name = "ckForm";
         window.open("wizard.aspx", "check", "width=500, height=300");
     }
 
+  
 
 </script>
 
@@ -68,7 +98,7 @@
 <body>
     <form id="userInfo" runat="server">
         <div>
-            아이디 : <asp:TextBox ID="TextBox1" runat="server" TextMode="SingleLine"></asp:TextBox><asp:Button ID="Button1" runat="server" Text="중복확인" OnClientClick="return openCk()" /><br />
+            아이디 : <asp:TextBox ID="userID" runat="server" TextMode="SingleLine"></asp:TextBox><asp:Button ID="Button1" runat="server" Text="중복확인" OnClientClick="return ConfirmID()" /><br />
 
             비밀번호 : <asp:TextBox ID="pwd" runat="server" TextMode="Password"></asp:TextBox>
              <asp:RequiredFieldValidator ID="RequireFieldValidation1" runat="server" ErrorMessage="<font color='red'>비밀번호를 입력하세요</font>" 
@@ -78,8 +108,10 @@
                         ControlToValidate="pwdck" Display="Dynamic"></asp:RequiredFieldValidator>  <br />
             <asp:CompareValidator ID="CompareValidator1" runat="server" ErrorMessage="비밀번호가 일치하지 않습니다" ControlToValidate="pwd" ControlToCompare="pwdck" Display="Dynamic"></asp:CompareValidator>
 
-            이메일 : <asp:TextBox ID="email" runat="server" TextMode="SingleLine" ></asp:TextBox><asp:Button ID="btnSendMail" runat="server" Text="메일전송" OnClick="btnSendMail_Click" />
+            이메일 : <asp:TextBox ID="email" runat="server" TextMode="SingleLine" placeholder="abcd@toword.com"></asp:TextBox><asp:Button ID="btnSendMail" runat="server" Text="메일전송" OnClick="btnSendMail_Click" /><br />
+            <asp:TextBox ID="confirmMail" runat="server" Visible="false" placeholder="인증번호를 입력하세요. "></asp:TextBox>
             
+            <asp:Button ID="Button2" runat="server" Text="Button" OnClick="Button2_Click" />
 
         </div>
     </form>

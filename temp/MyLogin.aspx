@@ -5,7 +5,7 @@
 
 <script runat="server">
 
-   
+
     bool IsAuthenticated(string userid, string password)
     {
         SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyDBConnectionString"].ConnectionString);
@@ -21,9 +21,51 @@
         return count >0;
     }
 
+
+
+
+    protected void Button1_Click(object sender, EventArgs e)
+    {
+
+
+        //Connection 객체 생성
+        SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog=MyDB; Integrated Security=False; uid=flunge; pwd=dksk1399");
+        //쿼리
+        string sql = "Select id from userInfo where id=@id and pwd=@pwd";
+        //command객체 생성후 매개변수로 쿼리문과 connection객체 전달
+        SqlCommand cmd = new SqlCommand(sql, con);
+
+        //connection객체 open
+        con.Open();
+
+        cmd.Parameters.AddWithValue("@id", txtId.Text);
+        cmd.Parameters.AddWithValue("@pwd", txtPwd.Text);
+
+        SqlDataReader rd = cmd.ExecuteReader();
+
+        if (rd.Read())
+        {
+            Session["id"] = txtId.Text;
+            rd.Close();
+            con.Close();
+
+            Response.Redirect("index.aspx");
+        }
+        else
+        {
+            this.Page.ClientScript.RegisterStartupScript(this.Page.GetType(), "MessageBox", "alert('아이디 또는 비밀번호를 확인하세요')",true);
+            rd.Close();
+            con.Close();
+        }
+        
+
+    }
+
+
+
 </script>
     
-    
+
     
 
 <style>
@@ -88,18 +130,24 @@
         <div>
 
             <div class="formDiv">
-            <asp:Label ID="Label2" runat="server" Text="아이디" CssClass="labelCss"></asp:Label><br />
-                <asp:TextBox ID="TextBox1" runat="server" CssClass="inputCss"></asp:TextBox><br />
+                <asp:Label ID="lblId" runat="server" Text="아이디" CssClass="labelCss"></asp:Label><br />
+                <asp:TextBox ID="txtId" runat="server" CssClass="inputCss"></asp:TextBox><br />
             </div>
+            <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ErrorMessage="<font color='red'>아아디를 입력하세요</font>" ControlToValidate="txtId" Display="Dynamic"></asp:RequiredFieldValidator>
             <div class="formDiv">
-            <asp:Label ID="Label3" runat="server" Text="암호" CssClass="labelCss"></asp:Label>
-                <asp:TextBox ID="TextBox2" runat="server" CssClass="inputCss" TextMode="Password"></asp:TextBox><br />
+                <asp:Label ID="lblPwd" runat="server" Text="암호" CssClass="labelCss"></asp:Label>
+                <asp:TextBox ID="txtPwd" runat="server" CssClass="inputCss" TextMode="Password"></asp:TextBox><br /> 
+            </div>
+            <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="<font color='red'>비밀번호를 입력하세요</font>" ControlToValidate="txtPwd" Display="Dynamic"></asp:RequiredFieldValidator>
+            <div class="formDiv">
+                <a href="SignUp.aspx">회원가입</a>
             </div>
             <div>
-            <asp:Button ID="Button1" runat="server" Text="로그인" CssClass="buttonCss"/><br />
+                <asp:Button ID="Button1" runat="server" Text="로그인" CssClass="buttonCss" OnClick="Button1_Click"/><br />
             </div>
 
         </div>
+        <input type="hidden" id="ok" />
     </form>
 </div>
 </body>
