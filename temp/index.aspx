@@ -129,23 +129,35 @@
 
 
     <form id="form1" runat="server">
-        <div>
 
+
+    <div class="jumbotron text-center leftJumbo" style="background-color: #214C63;" >
+        <h1>English</h1>
+        <p>매일 매일 영단어 암기</p>
+  
+        <div class="btn-group btn-group-justified">
+            <a href="masterEx.aspx?type=engBasic" class="btn btn-primary">기초 단어</a>
+            <a href="masterEx.aspx?type=engToeic" class="btn btn-primary">토익 단어</a>
+                
         </div>
+       
+    </div>
+
+
+
+
+     <div class="jumbotron text-center rightJumbo" style="background-color: #214C63;">
+        <h1>제2 외국어</h1>
+        <p>매일 매일 제2외국어 단어 암기</p>
+         
+        <div class="btn-group btn-group-justified">
+            <a href="#" class="btn btn-primary">추가 예정</a>
+            <a href="#" class="btn btn-primary">추가 예정</a>             
+        </div>       
+    </div>
+
+
     </form>
-
-
- <div class="jumbotron text-center leftJumbo" >
-        <h1>Toword</h1>
-        <p>매일 매일 단어 암기</p>
-    </div>
-
-     <div class="jumbotron text-center rightJumbo">
-        <h1>Toword</h1>
-        <p>매일 매일 단어 암기</p>
-    </div>
-
-
 
 
 </body>
