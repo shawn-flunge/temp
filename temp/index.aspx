@@ -45,6 +45,34 @@
         }
     }
 
+    protected void TypeBtn_Click(object sender, EventArgs e)
+    {
+
+
+        if (sender == btnEngBasic)
+        {
+            Session["type"] = "engBasic";
+            Response.Redirect("masterEx.aspx");
+        }
+        else if(sender== btnEngToeic)
+        {
+            if (Session["id"] == null)
+            {
+                this.Page.ClientScript.RegisterStartupScript(this.Page.GetType(), "MessageBox", "alert('로그인을 하세요(기초 영단어는 가능)')",true);
+            }
+            else
+            {
+                Session["type"] = "engToeic";
+                Response.Redirect("masterEx.aspx");
+            }
+            
+        }
+
+    }
+
+
+
+
 </script>
 
 <style>
@@ -136,11 +164,11 @@
         <p>매일 매일 영단어 암기</p>
   
         <div class="btn-group btn-group-justified">
-            <a href="masterEx.aspx?type=engBasic" class="btn btn-primary">기초 단어</a>
-            <a href="masterEx.aspx?type=engToeic" class="btn btn-primary">토익 단어</a>
+            <asp:Button ID="btnEngBasic" runat="server" Text="기초 단어" class="btn btn-primary" OnClick="TypeBtn_Click"/>
+            <asp:Button ID="btnEngToeic" runat="server" Text="토익 단어" class="btn btn-primary" OnClick="TypeBtn_Click"/>
                 
         </div>
-       
+        
     </div>
 
 

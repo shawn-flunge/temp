@@ -1,6 +1,7 @@
 ﻿<%@ Page Language="C#" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Data.OleDb" %>
+<%@ Import Namespace="System.Data.SqlClient" %>
 
 <!DOCTYPE html>
 
@@ -8,13 +9,12 @@
 
     static class typeOfquiz
     {
-        public const int numOfToeic = 1480;
+        public const int numOfEngToeic = 1480;
         public const int numOfEngBasic = 3000;
-        public const int numOfGerBasic = 3134;
 
-        public const string Toeic = "toeic.xls";
+        public const string EngToeic = "english_toeic.xls";
         public const string EngBasic = "english_basic.xls";
-        public const string GerBasic = "german_basic.xls";
+
     }
 
 
@@ -73,7 +73,7 @@
                         radioList[i].Items[j].Value = "x";
                         radioList[i].Items[j].Text = incorrect[i * 4 + j];
                     }
-                    //TextBox1.Text +=radioList[i].Items[j].Value + ":" +radioList[i].Items[j].Text +"\n";
+
                 }
 
                 //리스트아이템의 순서를 바꾸는 작업
@@ -91,22 +91,9 @@
                     radioList[i].Items.Add(sortedListItem);
             }
 
+
+
         }
-    }
-
-    protected void Button1_Click(object sender, EventArgs e)
-    {
-
-        labels = new Label[] { Label1, Label2, Label3, Label4, Label5, Label6, Label7, Label8, Label9, Label10 };
-        radioList = new RadioButtonList[] { RadioButtonList1, RadioButtonList2, RadioButtonList3, RadioButtonList4, RadioButtonList5, RadioButtonList6, RadioButtonList7, RadioButtonList8, RadioButtonList9, RadioButtonList10 };
-
-
-
-        for(int i = 0; i < 4; i++)
-        {
-            Label13.Text += radioList[0].Items[i].Value + ":" +radioList[0].Items[0].Text +",|||||||||||";
-        }
-
     }
 
     //컨트롤 및 변수 초기화
@@ -119,17 +106,35 @@
         dataTable = new DataTable();
         quizzes = new List<quiz>();
 
-        //파일 설정
-        fileName = "C:\\works/" + typeOfquiz.Toeic;
+        //파일 설정, 메인 페이지에서 버튼으로 정의한 세션을 가지고
+        fileName = "C:\\works/" + typeOfquiz.EngToeic;
+        arrCorrect = MakeRandomNum(typeOfquiz.numOfEngToeic, 10);
+        arrWrong = MakeRandomNum(typeOfquiz.numOfEngToeic, 40);
 
+        //switch (Session["type"].ToString())
+        //{
+        //    case "engBasic":
+        //        fileName = "C:\\works/" + typeOfquiz.EngBasic;
 
-        arrCorrect =MakeRandomNum(typeOfquiz.numOfToeic,10);
+        //        arrCorrect = MakeRandomNum(typeOfquiz.numOfEngBasic, 10);
+        //        arrWrong = MakeRandomNum(typeOfquiz.numOfEngBasic, 40);
+        //        break;
+        //    case "engToeic":
+        //        fileName = "C:\\works/" + typeOfquiz.EngToeic;
+        //        arrCorrect = MakeRandomNum(typeOfquiz.numOfEngToeic, 10);
+        //        arrWrong = MakeRandomNum(typeOfquiz.numOfEngToeic, 40);
+        //        break;
+        //    default:
+        //        fileName = "C:\\works/" + typeOfquiz.EngBasic;
+        //        arrCorrect = MakeRandomNum(typeOfquiz.numOfEngBasic, 10);
+        //        arrWrong = MakeRandomNum(typeOfquiz.numOfEngBasic, 40);
+        //        break;
 
-        arrWrong = MakeRandomNum(typeOfquiz.numOfToeic,40);
+        //}
+        
 
 
         incorrect = new string[arrWrong.Length];
-
 
         dataTable = LoadExcel(fileName);
 
@@ -183,14 +188,18 @@
 
             Response.Write("crt : " + Crt + ". inCrt : " + inCrt);
 
+            for (int i = 0; i < goToDB.Count; i++)
+            {
+                Response.Write(goToDB[i].word + ",");
+            }
 
 
 
 
         }
+
+
     }
-
-
 
 
     //엑셀 가져오는 메소드
@@ -233,6 +242,7 @@
         //엑셀 데이터가 로드된 데이터 테이블 반환
         return dataTable;
     }
+
     //엑셀 파일에서 임의의 인덱스값을 가져오기위해 
     public int[] MakeRandomNum(int numOfNeeds, int scaleOfArr)
     {
@@ -250,8 +260,95 @@
 
     protected void Wizard1_FinishButtonClick(object sender, WizardNavigationEventArgs e)
     {
+        labels = new Label[] { Label1, Label2, Label3, Label4, Label5, Label6, Label7, Label8, Label9, Label10 };
+        radioList = new RadioButtonList[] { RadioButtonList1, RadioButtonList2, RadioButtonList3, RadioButtonList4, RadioButtonList5, RadioButtonList6, RadioButtonList7, RadioButtonList8, RadioButtonList9, RadioButtonList10 };
 
+        int Crt=0;    //정답 카운트
+        int inCrt=0;  //오답 카운트
+
+        List<quiz> inCrrts = new List<quiz>();
+
+        //답을 검사
+        for (int i = 0; i < 10; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+
+                if (radioList[i].SelectedValue == "x" && radioList[i].Items[j].Value == "o")
+                {
+                    inCrrts.Add(new quiz() { word = labels[i].Text, meaning = radioList[i].Items[j].Text });
+                    inCrt++;
+
+                }
+            }
+        }
+        Crt = 10 - inCrt;
+
+        lblScore.Text = Crt * 10 + "점입니다.";
+
+        //로그인을 안했으면 틀린걸 디비에 저장하지 않아야 하기 때문
+        if (Session["id"] != null)
+            storeInCrr(inCrrts);
+
+        Session["type"] = null;
     }
+
+    //틀린문제를 db에 저장
+    public void storeInCrr(List<quiz> inCrr)
+    {
+        SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog=MyDB; Integrated Security=False; uid=flunge; pwd=dksk1399");
+        con.Open();
+
+        //select
+        SqlCommand cmd;
+        //update, insert
+        SqlCommand cmd2;
+        SqlDataReader rd;
+
+        //틀린단어가 이미 디비에 저장되어 있는지
+        string sql = "select * from MyDB.dbo.reminder where word=@word";
+        for(int i=0; i < inCrr.Count; i++)
+        {
+
+            cmd = new SqlCommand(sql, con);
+
+            //단어를 이용하여 검색
+            cmd.Parameters.AddWithValue("@word", inCrr[i].word);
+            rd = cmd.ExecuteReader();
+
+            //이미 있으면 update로 가중치만 +1 해줌, 없으면 insert
+            if (rd.Read())
+            {
+                string sqlUpdate = "update MyDB.dbo.reminder set importance=importance+1 where word=@word";
+                cmd2 = new SqlCommand(sqlUpdate, con);
+                cmd2.Parameters.AddWithValue("@word", inCrr[i].word);
+
+                rd.Close();
+                cmd2.ExecuteNonQuery();
+            }
+            else
+            {
+                string sqlInsert = "insert into MyDB.dbo.reminder(word,meaning,id,importance,type)" +
+                "values(@word,@meaning,@id,@importance,@type)";
+
+                cmd2 = new SqlCommand(sqlInsert, con);
+                cmd2.Parameters.AddWithValue("@word", inCrr[i].word);
+                cmd2.Parameters.AddWithValue("@meaning",inCrr[i].meaning);
+                cmd2.Parameters.AddWithValue("@id", Session["id"].ToString());
+                cmd2.Parameters.AddWithValue("@importance", 0);
+                cmd2.Parameters.AddWithValue("@type", Session["type"].ToString());
+
+                rd.Close();
+                cmd2.ExecuteNonQuery();
+            }
+            
+        }
+
+        con.Close();
+    }
+
+
+
 </script>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -263,9 +360,15 @@
     <form id="form1" runat="server">
         <div >
             
-            <asp:Button ID="Button1" runat="server" Text="Button" OnClick="Button1_Click"/>
+       
+            <asp:Label ID="Label14" runat="server" Text="Label"></asp:Label>
 
-            <asp:Wizard ID="Wizard1" runat="server" OnActiveStepChanged="Wizard1_ActiveStepChanged"  ActiveStepIndex="0" OnFinishButtonClick="Wizard1_FinishButtonClick">
+
+            <asp:Wizard ID="Wizard1" runat="server" OnActiveStepChanged="Wizard1_ActiveStepChanged"  ActiveStepIndex="0" OnFinishButtonClick="Wizard1_FinishButtonClick"
+                Width="100%"                      
+                BackColor="Yellow"
+                >
+                
                 <WizardSteps>
 
                     <asp:WizardStep ID="startStep" runat="server" StepType="Start" Title="시작하기">
@@ -277,7 +380,6 @@
                         <asp:Label ID="Label1" runat="server" Text="Label"></asp:Label>
                         <asp:RadioButtonList ID="RadioButtonList1" runat="server" >
                         </asp:RadioButtonList>
-                        <asp:Label ID="Label13" runat="server" Text="Label"></asp:Label>
                     </asp:WizardStep>
 
                     <asp:WizardStep ID="question2" runat="server" Title="Step 2">
@@ -344,7 +446,7 @@
                     </asp:WizardStep>
 
                     <asp:WizardStep ID="WizardStep1"  runat="server" StepType="Complete" Title="complete">
-                        <asp:Label ID="Label12" runat="server" Text=""></asp:Label>
+                        <asp:Label ID="lblScore" runat="server" Text="asdfasdfasdfasfdsafa"></asp:Label>
                         
                     </asp:WizardStep>
                 </WizardSteps>
