@@ -107,31 +107,31 @@
         quizzes = new List<quiz>();
 
         //파일 설정, 메인 페이지에서 버튼으로 정의한 세션을 가지고
-        fileName = "C:\\works/" + typeOfquiz.EngToeic;
-        arrCorrect = MakeRandomNum(typeOfquiz.numOfEngToeic, 10);
-        arrWrong = MakeRandomNum(typeOfquiz.numOfEngToeic, 40);
+        //fileName = "C:\\works/" + typeOfquiz.EngToeic;
+        //arrCorrect = MakeRandomNum(typeOfquiz.numOfEngToeic, 10);
+        //arrWrong = MakeRandomNum(typeOfquiz.numOfEngToeic, 40);
 
-        //switch (Session["type"].ToString())
-        //{
-        //    case "engBasic":
-        //        fileName = "C:\\works/" + typeOfquiz.EngBasic;
+        switch (Session["type"].ToString())
+        {
+            case "engBasic":
+                fileName = "C:\\works/" + typeOfquiz.EngBasic;
 
-        //        arrCorrect = MakeRandomNum(typeOfquiz.numOfEngBasic, 10);
-        //        arrWrong = MakeRandomNum(typeOfquiz.numOfEngBasic, 40);
-        //        break;
-        //    case "engToeic":
-        //        fileName = "C:\\works/" + typeOfquiz.EngToeic;
-        //        arrCorrect = MakeRandomNum(typeOfquiz.numOfEngToeic, 10);
-        //        arrWrong = MakeRandomNum(typeOfquiz.numOfEngToeic, 40);
-        //        break;
-        //    default:
-        //        fileName = "C:\\works/" + typeOfquiz.EngBasic;
-        //        arrCorrect = MakeRandomNum(typeOfquiz.numOfEngBasic, 10);
-        //        arrWrong = MakeRandomNum(typeOfquiz.numOfEngBasic, 40);
-        //        break;
+                arrCorrect = MakeRandomNum(typeOfquiz.numOfEngBasic, 10);
+                arrWrong = MakeRandomNum(typeOfquiz.numOfEngBasic, 40);
+                break;
+            case "engToeic":
+                fileName = "C:\\works/" + typeOfquiz.EngToeic;
+                arrCorrect = MakeRandomNum(typeOfquiz.numOfEngToeic, 10);
+                arrWrong = MakeRandomNum(typeOfquiz.numOfEngToeic, 40);
+                break;
+            default:
+                fileName = "C:\\works/" + typeOfquiz.EngBasic;
+                arrCorrect = MakeRandomNum(typeOfquiz.numOfEngBasic, 10);
+                arrWrong = MakeRandomNum(typeOfquiz.numOfEngBasic, 40);
+                break;
 
-        //}
-        
+        }
+
 
 
         incorrect = new string[arrWrong.Length];
@@ -290,7 +290,7 @@
         if (Session["id"] != null)
             storeInCrr(inCrrts);
 
-        Session["type"] = null;
+        
     }
 
     //틀린문제를 db에 저장
@@ -341,7 +341,7 @@
                 rd.Close();
                 cmd2.ExecuteNonQuery();
             }
-            
+
         }
 
         con.Close();

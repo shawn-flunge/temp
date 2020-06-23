@@ -32,11 +32,13 @@
             {
                 navbardrop.InnerText=Session["id"].ToString();
 
-
                 DropUser.Visible = true;
+                DropUser.HRef = "UserInfo.aspx";
+
                 DropLog.InnerText = "LogOut";
                 DropLog.HRef = "Logout.aspx";
 
+                Session["type"] = null;
             }
 
 
@@ -45,6 +47,7 @@
         }
     }
 
+    //퀴즈 유형 선택
     protected void TypeBtn_Click(object sender, EventArgs e)
     {
 
@@ -65,7 +68,7 @@
                 Session["type"] = "engToeic";
                 Response.Redirect("masterEx.aspx");
             }
-            
+
         }
 
     }
@@ -82,7 +85,7 @@
 		background : linear-gradient(#214C63,#2D8634);
 		background-repeat : no-repeat;
 		background-size : cover;
-        height : 1000px
+        height:1000px
 		}
 	.jumbotron {
   		background-color: #214C63; 
@@ -97,18 +100,31 @@
     		padding: 60px 50px;
   		}
 
-     .leftJumbo{
+    .leftJumbo{
          float:left;
          margin-left:5%;
          width:40%;
-     }
+    }
 
-      .rightJumbo{
+    .rightJumbo{
          float:right;
          margin-right:5%;
          width:40%;
-     }
+    }
 
+    .bg-4 { 
+         background-color: #2f2f2f;
+         color: #fff;
+    }
+
+    .footer{
+        position:fixed;
+        left:0px; 
+        bottom:0px; 
+        height: 50px;
+        width:100%;
+        margin-bottom:0px;
+    }
 
 </style>
 
@@ -125,29 +141,25 @@
 </head>
 <body class="body">
     <nav class="navbar navbar-expand-sm bg-info navbar-dark fixed-top">
-  <!-- Brand -->
-  <a class="navbar-brand" href="index.aspx" runat="server" >Toword</a>
-
-  <!-- Links -->
-  <ul class="navbar-nav">
-    
-
-    <!-- Dropdown -->
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" href="#" runat="server" id="navbardrop" data-toggle="dropdown">
-        Dropdown link
-      </a>
-      <div class="dropdown-menu" >
-        <a class="dropdown-item" runat="server" id="DropLog">로그아웃</a>
-        <a class="dropdown-item" runat="server" id="DropUser">회원정보</a>
+        <a class="navbar-brand" href="index.aspx" runat="server" >Toword</a>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" runat="server" id="navbardrop" data-toggle="dropdown">
+                        Dropdown link
+                    </a>
+                    <div class="dropdown-menu" >
+                        <a class="dropdown-item" runat="server" id="DropLog">로그아웃</a>
+                        <a class="dropdown-item" runat="server" id="DropUser">회원정보</a>
         
-      </div>
-    </li>
-  </ul>
-</nav>
+                    </div>
+                </li>
+            </ul>
+    </nav>
 
     <br />
     <br />
+
+  
     
     <div class="jumbotron text-center" style="background-color: #214C63;">
         <h1>Toword</h1>
@@ -184,9 +196,31 @@
         </div>       
     </div>
 
+  
 
     </form>
 
 
+   <%--  <div style="margin-top:500px">
+        <footer class="container-fluid bg-4 text-center">
+            
+
+            <div class=" text-center py-3">© 2020 Copyright:
+                <a href="https://github.com/shawn-flunge/"> 201607058 이시헌</a>
+            </div>
+
+        </footer>
+    </div>--%>
+
+
+    <footer class="footer bg-4">
+        <div class=" text-center py-3">© 2020 Copyright:
+                <a href="https://github.com/shawn-flunge/"> 201607058 이시헌</a>
+            </div>
+    </footer>
+
+
+    
 </body>
+    
 </html>

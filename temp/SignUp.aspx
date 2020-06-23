@@ -180,7 +180,7 @@
     <form id="userInfo" runat="server" class="form">
         <div>
             <div class="formDiv">
-                <asp:Label ID="lblId" runat="server" Text="아이디" CssClass="labelCss"></asp:Label>
+                <asp:Label ID="lblId" runat="server" Text="아이디" ></asp:Label>
                 <asp:TextBox ID="userID" runat="server" TextMode="SingleLine" CssClass="inputCss"></asp:TextBox><asp:Button ID="Button1" runat="server" Text="중복확인" OnClientClick="return ConfirmID()" CssClass="buttonCss"/>
             </div>
             <div class="formDiv">

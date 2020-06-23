@@ -1,5 +1,5 @@
 ﻿<%@ Master Language="C#" %>
-
+<%@ Import Namespace="System.Data.SqlClient" %>
 <!DOCTYPE html>
 
 <script runat="server">
@@ -32,8 +32,9 @@
             {
                 navbardrop.InnerText=Session["id"].ToString();
 
-
                 DropUser.Visible = true;
+                DropUser.HRef = "UserInfo.aspx";
+
                 DropLog.InnerText = "LogOut";
                 DropLog.HRef = "Logout.aspx";
 
@@ -45,26 +46,36 @@
         }
     }
 
-
-
-
-</script>
-
-<script type="text/javascript">
-
-    function pageLoad()
+    //댓글 작성 버튼 누를시
+    protected void btnComment_Click(object sender, EventArgs e)
     {
-        
-        var quizFrame = document.getElementById("fraQuiz");
-        quizFrame.contentWindow.setQuizType();
+        //로그인이 안되어있으면
+        if (Session["id"] == null)
+        {
+            this.Page.ClientScript.RegisterStartupScript(this.Page.GetType(), "MessageBox", "alert('로그인하세요')",true);
+        }
+        else
+        {
+            SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog=MyDB; Integrated Security=False; uid=flunge; pwd=dksk1399");
+
+            string sql = "insert into MyDB.dbo.oneLineBoard(id, content, writedate) values(@id, @content, @writedate)";
+
+            con.Open();
+
+            SqlCommand cmd = new SqlCommand(sql, con);
+            cmd.Parameters.AddWithValue("@id", Session["id"].ToString());
+            cmd.Parameters.AddWithValue("@content", txtComment.Text);
+            cmd.Parameters.AddWithValue("@writedate", DateTime.Now);
+
+            cmd.ExecuteNonQuery();
+
+            con.Close();
+
+        }
+
+
     }
 
-    function setQuizType()
-    {
-        alert('hello');
-    }
-
-    window.onload = pageLoad;  // invoke pageLoad after all content is loaded
 
 </script>
 
@@ -73,7 +84,7 @@
     .abc{
         position:absolute;
         margin-left:15%;
-        margin-top:10%;
+        margin-top:7%;
     }
 
     table{
@@ -81,22 +92,33 @@
         border:0
     }
 
-</style>
+    .bg-4 { 
+    background-color: #2f2f2f; /* Black Gray */
+    color: #fff;
+  }
 
-<style>
 
    .body {
 		
 		background : linear-gradient(#214C63,#2D8634);
 		background-repeat : no-repeat;
 		background-size : cover;
-        height : 1000px
-		}
+        height : 1500px
+    }
 
 
- 	.container-fluid {
+    .container-fluid {
     		padding: 60px 50px;
-  		}
+    }
+
+   .footer{
+        position:fixed;
+        left:0px; 
+        bottom:0px; 
+        height: 50px;
+        width:100%;
+        margin-bottom:0px;
+    }
 
 
 </style>
@@ -116,58 +138,88 @@
 <body class="body">
 
     <nav class="navbar navbar-expand-sm bg-info navbar-dark fixed-top">
-  <!-- Brand -->
-  <a class="navbar-brand" href="index.aspx" runat="server" >Toword</a>
-
-  <!-- Links -->
-  <ul class="navbar-nav">
-    
-
-    <!-- Dropdown -->
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" href="#" runat="server" id="navbardrop" data-toggle="dropdown">
-        Dropdown link
-      </a>
-      <div class="dropdown-menu" >
-        <a class="dropdown-item" runat="server" id="DropLog">로그아웃</a>
-        <a class="dropdown-item" runat="server" id="DropUser">회원정보</a>
+        <a class="navbar-brand" href="index.aspx" runat="server" >Toword</a>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" runat="server" id="navbardrop" data-toggle="dropdown">
+                        Dropdown link
+                    </a>
+                    <div class="dropdown-menu" >
+                        <a class="dropdown-item" runat="server" id="DropLog">로그아웃</a>
+                        <a class="dropdown-item" runat="server" id="DropUser">회원정보</a>
         
-      </div>
-    </li>
-  </ul>
-</nav>
-
+                    </div>
+                </li>
+            </ul>
+    </nav>
 
 
     <form id="form1" runat="server">
 
     <div style="position:relative;">
-        <<table class="abc">
+        <<table class="abc" >
             <tr>
                 <td colspan="2"><b>마스터 페이지 입니다.</b></td>
             </tr>
             <tr>
-                <td style="height:500px">
+                <td style="height:500px" class="bg-info">
                     <asp:ContentPlaceHolder id="quiz" runat="server">
                     </asp:ContentPlaceHolder>
                 </td>
-                <td style="background-color:aquamarine; height:50%">
+                <td style="background-color:aquamarine; height:500px">
                     <asp:ContentPlaceHolder id="ex" runat="server">
                     </asp:ContentPlaceHolder>
                 </td>
             </tr>
             <tr>
-                <td colspan="2">
-                    <asp:GridView ID="GridView1" runat="server"></asp:GridView>
+                <td colspan="2" style="background-color:snow">
+                    <br />
 
+                    <asp:Label ID="Label1" runat="server" Text="댓글 쓰기"></asp:Label><br />
+                    <asp:TextBox ID="txtComment" runat="server" TextMode="MultiLine" Width="100%"></asp:TextBox><br />
+                    <asp:Button ID="btnComment" runat="server" Text="작성" style="float:right; margin-right:5%" OnClick="btnComment_Click" />
+
+                    <br />
+                    <asp:GridView ID="GridView1" runat="server"  AutoGenerateColumns="False" DataKeyNames="no" DataSourceID="SqlDataSource1" Width="100%" AllowPaging="True">
+                        <Columns>
+                            <asp:BoundField DataField="no" HeaderText="번호" InsertVisible="False" ReadOnly="True" SortExpression="no">
+                                <HeaderStyle Width="7%" />
+                            </asp:BoundField>
+                            <asp:BoundField DataField="id" HeaderText="작성자" SortExpression="id" >
+                                <HeaderStyle Width="8%" />
+                            </asp:BoundField>
+                            <asp:BoundField DataField="content" HeaderText="내용" SortExpression="content" >
+                                <HeaderStyle Width="70%" />
+                            </asp:BoundField>
+                            <asp:BoundField DataField="writedate" HeaderText="작성일" SortExpression="writedate" >
+                                <HeaderStyle Width="15%" />
+                            </asp:BoundField>
+                        </Columns>
+                        <FooterStyle BackColor="#CCCCCC" ForeColor="Black" />
+                        <PagerStyle BackColor="#999999" ForeColor="Black" HorizontalAlign="Center" />
+                        <SelectedRowStyle BackColor="#008A8C" Font-Bold="true" ForeColor="White" />
+                        <HeaderStyle BackColor="#000084" Font-Bold="true" ForeColor="White" />
+                        <AlternatingRowStyle BackColor="#DCDCDC" />
+                    </asp:GridView>
+                    <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:MyDBConnectionString %>" SelectCommand="SELECT * FROM [oneLineBoard]"></asp:SqlDataSource>
+                    dfagdgfadgadgdfgf
                 </td>
 
             </tr>
         </table>
         
     </div>
-       
-        
+
     </form>
+    
+
+    <footer class="footer bg-4">
+        <div class=" text-center py-3">© 2020 Copyright:
+                <a href="https://github.com/shawn-flunge/"> 201607058 이시헌</a>
+            </div>
+    </footer>
+   
+
 </body>
+    
 </html>
