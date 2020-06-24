@@ -73,7 +73,8 @@
 
     }
 
-    public void CheckForSubmit()
+    //가입 루틴, 성공하면 true, 실패하면 false 반환
+    public bool CheckForSubmit()
     {
         //비밀번호가 일치하고 인증번호가 일치하면, 다시게시 때문에 visible==false인 라벨을 만들어서 값 저장시킴
         if(pwd.Text==pwdck.Text && confirmMail.Text == lblVerification.Text)
@@ -91,10 +92,12 @@
             cmd.ExecuteNonQuery();
 
             con.Close();
+            return true;
         }
         else
         {
             this.Page.ClientScript.RegisterStartupScript(this.Page.GetType(), "MessageBox", "alert('인증번호를 확인하세요')",true);
+            return false;
         }
 
 
@@ -102,7 +105,10 @@
 
     protected void Button2_Click(object sender, EventArgs e)
     {
-        CheckForSubmit();
+
+        if(CheckForSubmit())
+            this.Page.ClientScript.RegisterStartupScript(this.Page.GetType(), "MessageBox", "alert('가입을 축하합니다.')",true);
+
         Response.Redirect("index.aspx");
     }
 
@@ -180,8 +186,9 @@
     <form id="userInfo" runat="server" class="form">
         <div>
             <div class="formDiv">
-                <asp:Label ID="lblId" runat="server" Text="아이디" ></asp:Label>
-                <asp:TextBox ID="userID" runat="server" TextMode="SingleLine" CssClass="inputCss"></asp:TextBox><asp:Button ID="Button1" runat="server" Text="중복확인" OnClientClick="return ConfirmID()" CssClass="buttonCss"/>
+                <asp:Label ID="lblId" runat="server" Text="아이디" CssClass="labelCss"></asp:Label>
+                <asp:TextBox ID="userID" runat="server" TextMode="SingleLine" CssClass="inputCss"></asp:TextBox>
+                <asp:Button ID="Button1" runat="server" Text="중복확인" OnClientClick="return ConfirmID()" CssClass="buttonCss"/>
             </div>
             <div class="formDiv">
                <asp:Label ID="lblPwd" runat="server" Text="암호" CssClass="labelCss" ></asp:Label>
