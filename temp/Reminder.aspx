@@ -4,6 +4,14 @@
 
 <script runat="server">
 
+    //퀴즈 구조체
+    public struct quiz
+    {
+        public string word { get; set; }
+        public string meaning { get; set; }
+    }
+
+
     protected void Page_Load(object sender, EventArgs e)
     {
 
