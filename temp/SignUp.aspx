@@ -79,7 +79,7 @@
         //비밀번호가 일치하고 인증번호가 일치하면, 다시게시 때문에 visible==false인 라벨을 만들어서 값 저장시킴
         if(pwd.Text==pwdck.Text && confirmMail.Text == lblVerification.Text)
         {
-            SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog=MyDB; Integrated Security=False; uid=flunge; pwd=dksk1399");
+            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyDBConnectionString"].ConnectionString);
 
             string sql = "insert into userInfo values(@userid, @password, @email)";
             SqlCommand cmd = new SqlCommand(sql, con);

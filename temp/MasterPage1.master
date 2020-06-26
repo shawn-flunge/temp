@@ -56,7 +56,7 @@
         }
         else
         {
-            SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog=MyDB; Integrated Security=False; uid=flunge; pwd=dksk1399");
+            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyDBConnectionString"].ConnectionString);
 
             string sql = "insert into MyDB.dbo.oneLineBoard(id, content, writedate) values(@id, @content, @writedate)";
 

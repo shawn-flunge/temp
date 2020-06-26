@@ -9,6 +9,7 @@
     bool IsAuthenticated(string userid, string password)
     {
         SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyDBConnectionString"].ConnectionString);
+       // SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog=MyDB; Integrated Security=False; uid=flungeg; pwd=dksk1399");
         string sql = "select count(userid) from member where userid = @userid and password=@password";
         SqlCommand cmd = new SqlCommand(sql, con);
         cmd.Parameters.AddWithValue("@userid", userid);

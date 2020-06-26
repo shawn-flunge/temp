@@ -53,7 +53,7 @@
     //회원정보창에 정보를 세팅
     public void setInfo()
     {
-        SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog=MyDB; Integrated Security=False; uid=flunge; pwd=dksk1399 ");
+        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyDBConnectionString"].ConnectionString);
         string sql = "select * from MyDB.dbo.userInfo where id='"+Session["id"].ToString()+"'";
         con.Open();
 
@@ -75,7 +75,7 @@
     //정보바꾸는 메소드
     protected void btnSubmit_Click(object sender, EventArgs e)
     {
-        SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog=MyDB; Integrated Security=False; uid=flunge; pwd=dksk1399");
+        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyDBConnectionString"].ConnectionString);
         string sql = "update userInfo set pwd=@pwd where id=@id";
         con.Open();
 

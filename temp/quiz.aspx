@@ -296,7 +296,7 @@
     //틀린문제를 db에 저장
     public void storeInCrr(List<quiz> inCrr)
     {
-        SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog=MyDB; Integrated Security=False; uid=flunge; pwd=dksk1399");
+        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyDBConnectionString"].ConnectionString);
         con.Open();
 
         //select
