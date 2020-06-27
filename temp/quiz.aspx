@@ -69,7 +69,6 @@
                     else //j=1,2,3
                     {
                         radioList[i].Items.Add(incorrect[i * 4 + j]);
-
                         radioList[i].Items[j].Value = "x";
                         radioList[i].Items[j].Text = incorrect[i * 4 + j];
                     }
@@ -91,26 +90,20 @@
                     radioList[i].Items.Add(sortedListItem);
             }
 
-
-
         }
     }
 
     //컨트롤 및 변수 초기화
     public void Init()
     {
+
         labels = new Label[] { Label1, Label2, Label3, Label4, Label5, Label6, Label7, Label8, Label9, Label10 };
         radioList = new RadioButtonList[] { RadioButtonList1, RadioButtonList2, RadioButtonList3, RadioButtonList4, RadioButtonList5, RadioButtonList6, RadioButtonList7, RadioButtonList8, RadioButtonList9, RadioButtonList10 };
-
 
         dataTable = new DataTable();
         quizzes = new List<quiz>();
 
         //파일 설정, 메인 페이지에서 버튼으로 정의한 세션을 가지고
-        //fileName = "C:\\works/" + typeOfquiz.EngToeic;
-        //arrCorrect = MakeRandomNum(typeOfquiz.numOfEngToeic, 10);
-        //arrWrong = MakeRandomNum(typeOfquiz.numOfEngToeic, 40);
-
         switch (Session["type"].ToString())
         {
             case "engBasic":
@@ -132,8 +125,6 @@
 
         }
 
-
-
         incorrect = new string[arrWrong.Length];
 
         dataTable = LoadExcel(fileName);
@@ -153,53 +144,47 @@
 
     }
 
-    protected void Wizard1_ActiveStepChanged(object sender, EventArgs e)
-    {
+    //protected void Wizard1_ActiveStepChanged(object sender, EventArgs e)
+    //{
 
-        List<quiz> wrong = new List<quiz>();
+    //    List<quiz> wrong = new List<quiz>();
 
-        //endStep이면 점수보여주고 틀린 문제 저장
-        if (Wizard1.ActiveStep == endStep)
-        {
-            labels = new Label[] { Label1, Label2, Label3, Label4, Label5, Label6, Label7, Label8, Label9, Label10 };
-            radioList = new RadioButtonList[] { RadioButtonList1, RadioButtonList2, RadioButtonList3, RadioButtonList4, RadioButtonList5, RadioButtonList6, RadioButtonList7, RadioButtonList8, RadioButtonList9, RadioButtonList10 };
+    //    //endStep이면 점수보여주고 틀린 문제 저장
+    //    if (Wizard1.ActiveStep == endStep)
+    //    {
+    //        labels = new Label[] { Label1, Label2, Label3, Label4, Label5, Label6, Label7, Label8, Label9, Label10 };
+    //        radioList = new RadioButtonList[] { RadioButtonList1, RadioButtonList2, RadioButtonList3, RadioButtonList4, RadioButtonList5, RadioButtonList6, RadioButtonList7, RadioButtonList8, RadioButtonList9, RadioButtonList10 };
 
-            int Crt=0;    //정답 카운트
-            int inCrt=0;  //오답 카운트
+    //        int Crt=0;    //정답 카운트
+    //        int inCrt=0;  //오답 카운트
 
-            List<quiz> goToDB = new List<quiz>();
+    //        List<quiz> goToDB = new List<quiz>();
 
-            //답을 검사
-            for (int i = 0; i < 10; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
+    //        //답을 검사
+    //        for (int i = 0; i < 10; i++)
+    //        {
+    //            for (int j = 0; j < 4; j++)
+    //            {
 
-                    if (radioList[i].SelectedValue == "x" && radioList[i].Items[j].Value == "o")
-                    {
-                        goToDB.Add(new quiz() { word = labels[i].Text, meaning = radioList[i].Items[j].Text });
-                        inCrt++;
+    //                if (radioList[i].SelectedValue == "x" && radioList[i].Items[j].Value == "o")
+    //                {
+    //                    goToDB.Add(new quiz() { word = labels[i].Text, meaning = radioList[i].Items[j].Text });
+    //                    inCrt++;
 
-                    }
-                }
-            }
+    //                }
+    //            }
+    //        }
 
-            Crt = 10 - inCrt;
+    //        Crt = 10 - inCrt;
 
-            Response.Write("crt : " + Crt + ". inCrt : " + inCrt);
+    //        for (int i = 0; i < goToDB.Count; i++)
+    //        {
+    //            Response.Write(goToDB[i].word + ",");
+    //        }
 
-            for (int i = 0; i < goToDB.Count; i++)
-            {
-                Response.Write(goToDB[i].word + ",");
-            }
+    //    }
 
-
-
-
-        }
-
-
-    }
+    //}
 
 
     //엑셀 가져오는 메소드
@@ -290,7 +275,7 @@
         if (Session["id"] != null)
             storeInCrr(inCrrts);
 
-        
+
     }
 
     //틀린문제를 db에 저장
@@ -359,15 +344,9 @@
 <body>
     <form id="form1" runat="server">
         <div >
-            
-       
-            <asp:Label ID="Label14" runat="server" Text="Label"></asp:Label>
 
-
-            <asp:Wizard ID="Wizard1" runat="server" OnActiveStepChanged="Wizard1_ActiveStepChanged"  ActiveStepIndex="0" OnFinishButtonClick="Wizard1_FinishButtonClick"
-                Width="100%"                      
-                BackColor="Yellow"
-                >
+            <asp:Wizard ID="Wizard1" runat="server"  ActiveStepIndex="0" OnFinishButtonClick="Wizard1_FinishButtonClick"
+                Width="100%">
                 
                 <WizardSteps>
 
@@ -439,14 +418,13 @@
 
 
 
-                    <asp:WizardStep ID="endStep"  runat="server" StepType="Finish" Title="finis">
-                        <asp:Label ID="Label11" runat="server" Text="Label"></asp:Label>
-                        <asp:TextBox ID="TextBox1" runat="server" TextMode="MultiLine"></asp:TextBox>
+                    <asp:WizardStep ID="endStep"  runat="server" StepType="Finish" Title="finish">
+
 
                     </asp:WizardStep>
 
                     <asp:WizardStep ID="WizardStep1"  runat="server" StepType="Complete" Title="complete">
-                        <asp:Label ID="lblScore" runat="server" Text="asdfasdfasdfasfdsafa"></asp:Label>
+                        <asp:Label ID="lblScore" runat="server" Text=""></asp:Label>
                         
                     </asp:WizardStep>
                 </WizardSteps>

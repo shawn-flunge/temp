@@ -106,23 +106,27 @@
     protected void Button2_Click(object sender, EventArgs e)
     {
 
-        if(CheckForSubmit())
+        if(CheckForSubmit() && confirm.Value == "o")
+        {
             this.Page.ClientScript.RegisterStartupScript(this.Page.GetType(), "MessageBox", "alert('가입을 축하합니다.')",true);
+            Response.Redirect("index.aspx");
+        }
+        else
+        {
+            this.Page.ClientScript.RegisterStartupScript(this.Page.GetType(), "MessageBox", "alert('아이디 중복확인을 하세요')",true);
+        }
 
-        Response.Redirect("index.aspx");
+
+
     }
 
 
 </script>
-<script lang="javascript" type="text/javascript">
-
-    function ConfirmID() {
+<script type="text/javascript">
+    function openCk() {
         window.name = "ckForm";
-        window.open("wizard.aspx", "check", "width=500, height=300");
+        window.open("confirm.aspx", "check", "width=700, height=500");
     }
-
-  
-
 </script>
 
 <style>
@@ -188,7 +192,7 @@
             <div class="formDiv">
                 <asp:Label ID="lblId" runat="server" Text="아이디" CssClass="labelCss"></asp:Label>
                 <asp:TextBox ID="userID" runat="server" TextMode="SingleLine" CssClass="inputCss"></asp:TextBox>
-                <asp:Button ID="Button1" runat="server" Text="중복확인" OnClientClick="return ConfirmID()" CssClass="buttonCss"/>
+                <asp:Button ID="btnConfirm" runat="server" Text="중복확인" OnClientClick="openCk()" CssClass="buttonCss"/>
             </div>
             <div class="formDiv">
                <asp:Label ID="lblPwd" runat="server" Text="암호" CssClass="labelCss" ></asp:Label>
@@ -221,6 +225,8 @@
         </div>
         
         <asp:Label ID="lblVerification" runat="server" Text="" Visible="false"></asp:Label>
+        <input type="hidden" id="confirm" runat="server" value="x" />
+        
     </form>
 </div>
 </body>

@@ -6,31 +6,10 @@
 <script runat="server">
 
 
-    bool IsAuthenticated(string userid, string password)
-    {
-        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyDBConnectionString"].ConnectionString);
-       // SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog=MyDB; Integrated Security=False; uid=flungeg; pwd=dksk1399");
-        string sql = "select count(userid) from member where userid = @userid and password=@password";
-        SqlCommand cmd = new SqlCommand(sql, con);
-        cmd.Parameters.AddWithValue("@userid", userid);
-        cmd.Parameters.AddWithValue("@password", password);
-
-        con.Open();
-        int count = (int)cmd.ExecuteNonQuery();
-        con.Close();
-
-        return count >0;
-    }
-
-
-
-
     protected void Button1_Click(object sender, EventArgs e)
     {
-
-
         //Connection 객체 생성
-        SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS; Initial Catalog=MyDB; Integrated Security=False; uid=flunge; pwd=dksk1399");
+        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyDBConnectionString"].ConnectionString);
         //쿼리
         string sql = "Select id from userInfo where id=@id and pwd=@pwd";
         //command객체 생성후 매개변수로 쿼리문과 connection객체 전달

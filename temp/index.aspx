@@ -55,7 +55,7 @@
         if (sender == btnEngBasic)
         {
             Session["type"] = "engBasic";
-            Response.Redirect("masterEx.aspx");
+            Response.Redirect("main.aspx");
         }
         else if(sender== btnEngToeic)
         {
@@ -66,7 +66,7 @@
             else
             {
                 Session["type"] = "engToeic";
-                Response.Redirect("masterEx.aspx");
+                Response.Redirect("main.aspx");
             }
 
         }

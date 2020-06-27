@@ -42,6 +42,19 @@
 
                 //회원정보 세팅
                 setInfo();
+
+                if (Session["id"].ToString() == "admin")
+                {
+                    txtSuggestion.Visible = false;
+                    btnSend.Visible = false;
+                    GridView1.Visible = true;
+                }
+                else
+                {
+                    txtSuggestion.Visible = true;
+                    btnSend.Visible = true;
+                    GridView1.Visible =false;
+                }
             }
 
 
@@ -117,9 +130,21 @@
         client.UseDefaultCredentials = false;
         client.Credentials = new System.Net.NetworkCredential("echunleaning@gmail.com", "!#qwe1234");
         client.Send(message);
-         
+
     }
 
+    protected void GridView1_RowDeleting(object sender, GridViewDeleteEventArgs e)
+    {
+        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyDBConnectionString"].ConnectionString);
+        string sql = "delete from userInfo where id=@id";
+        string id = GridView1.DataKeys[e.RowIndex].Value.ToString();
+
+        SqlCommand cmd = new SqlCommand(sql, con);
+        cmd.Parameters.AddWithValue("@id", id);
+        con.Open();
+        cmd.ExecuteNonQuery();
+        con.Close();
+    }
 </script>
 
 <style>
@@ -288,6 +313,44 @@
                         <h3>건의 사항이 있으면 건의해주세요~</h3>
                         <asp:TextBox ID="txtSuggestion" runat="server" TextMode="MultiLine" Width="100%" Height="70%"></asp:TextBox>
                         <asp:Button ID="btnSend" runat="server" Text="전송" CssClass="buttonCss" OnClick="btnSend_Click" CausesValidation="false"/>
+
+
+                        <asp:GridView ID="GridView1" runat="server" Visible="False" AllowPaging="True" AutoGenerateColumns="False" DataKeyNames="id" DataSourceID="SqlDataSource1"
+                            OnRowDeleting="GridView1_RowDeleting" >
+                            
+                            <Columns>
+                                <asp:CommandField ShowDeleteButton="True" />
+                                <asp:BoundField DataField="id" HeaderText="id" ReadOnly="True" SortExpression="id" />
+                                <asp:BoundField DataField="pwd" HeaderText="pwd" SortExpression="pwd" />
+                                <asp:BoundField DataField="email" HeaderText="email" SortExpression="email" />
+                            </Columns>
+                        </asp:GridView>
+
+
+
+
+
+                        <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:MyDBConnectionString %>" SelectCommand="SELECT * FROM [userInfo]" DeleteCommand="DELETE FROM [userInfo] WHERE [id] = @id" InsertCommand="INSERT INTO [userInfo] ([id], [pwd], [email]) VALUES (@id, @pwd, @email)" UpdateCommand="UPDATE [userInfo] SET [pwd] = @pwd, [email] = @email WHERE [id] = @id">
+                            <DeleteParameters>
+                                <asp:Parameter Name="id" Type="String" />
+                            </DeleteParameters>
+                            <InsertParameters>
+                                <asp:Parameter Name="id" Type="String" />
+                                <asp:Parameter Name="pwd" Type="String" />
+                                <asp:Parameter Name="email" Type="String" />
+                            </InsertParameters>
+                            <UpdateParameters>
+                                <asp:Parameter Name="pwd" Type="String" />
+                                <asp:Parameter Name="email" Type="String" />
+                                <asp:Parameter Name="id" Type="String" />
+                            </UpdateParameters>
+                        </asp:SqlDataSource>
+
+
+
+
+
+
                     </td>
 
                 </tr>

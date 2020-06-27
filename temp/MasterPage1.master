@@ -159,7 +159,8 @@
     <div style="position:relative;">
         <<table class="abc" >
             <tr>
-                <td colspan="2"><b>마스터 페이지 입니다.</b></td>
+                <td><b>오늘의 문제</b></td>
+                <td><b>오답 복습</b></td>
             </tr>
             <tr>
                 <td style="height:500px" class="bg-info">
@@ -202,7 +203,7 @@
                         <AlternatingRowStyle BackColor="#DCDCDC" />
                     </asp:GridView>
                     <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:MyDBConnectionString %>" SelectCommand="SELECT * FROM [oneLineBoard]"></asp:SqlDataSource>
-                    dfagdgfadgadgdfgf
+                    
                 </td>
 
             </tr>
